@@ -1,119 +1,290 @@
 #include <iostream>
 using namespace std;
 
-#define MAX 5
+typedef int elem;
 
-class Queue {
+// 배열 기반 원형 큐
+class MyCircularQueue {
 private:
-    int arr[MAX];
     int front;
     int rear;
+    int maxSize;
     int count;
+    elem* list;
 
 public:
-    Queue() {
+    MyCircularQueue(int size = 10) {
+        maxSize = size;
+        list = new elem[maxSize];
+
         front = 0;
         rear = -1;
         count = 0;
     }
 
-    bool isEmpty() {
+    ~MyCircularQueue() {
+        delete[] list;
+    }
+
+    void initialize() {
+        front = 0;
+        rear = -1;
+        count = 0;
+    }
+
+    bool isEmpty() const {
         return count == 0;
     }
 
-    bool isFull() {
-        return count == MAX;
+    bool isFull() const {
+        return count == maxSize;
     }
 
-    void enqueue(int value) {
+    int size() const {
+        return count;
+    }
+
+    void enqueue(const elem& e) {
         if (isFull()) {
-            cout << "Queue is full" << endl;
+            cout << "Circular Queue is full" << endl;
             return;
         }
 
-        rear = (rear + 1) % MAX;
-        arr[rear] = value;
+        rear = (rear + 1) % maxSize;
+        list[rear] = e;
         count++;
     }
 
-    int dequeue() {
+    elem dequeue() {
         if (isEmpty()) {
-            cout << "Queue is empty" << endl;
+            cout << "Circular Queue is empty" << endl;
             return -1;
         }
 
-        int value = arr[front];
-        front = (front + 1) % MAX;
+        elem value = list[front];
+        front = (front + 1) % maxSize;
         count--;
 
         return value;
     }
 
-    int Front() {
+    elem frontItem() const {
         if (isEmpty()) {
-            cout << "Queue is empty" << endl;
+            cout << "Circular Queue is empty" << endl;
             return -1;
         }
 
-        return arr[front];
+        return list[front];
     }
 
-    int Rear() {
+    elem rearItem() const {
         if (isEmpty()) {
-            cout << "Queue is empty" << endl;
+            cout << "Circular Queue is empty" << endl;
             return -1;
         }
 
-        return arr[rear];
+        return list[rear];
     }
 
-    int size() {
-        return count;
-    }
-
-    void clear() {
-        front = 0;
-        rear = -1;
-        count = 0;
-    }
-
-    void print() {
+    void print() const {
         if (isEmpty()) {
-            cout << "Queue is empty" << endl;
+            cout << "Circular Queue is empty" << endl;
             return;
         }
 
-        cout << "Queue: ";
+        cout << "Circular Queue: ";
+
+        int index = front;
+
         for (int i = 0; i < count; i++) {
-            int index = (front + i) % MAX;
-            cout << arr[index] << " ";
+            cout << list[index] << " ";
+            index = (index + 1) % maxSize;
         }
+
         cout << endl;
     }
 };
 
+
+// =========================
+// 연결 리스트 기반 큐
+// =========================
+class Node {
+public:
+    int data;
+    Node* next;
+
+    Node(int data) {
+        this->data = data;
+        this->next = nullptr;
+    }
+};
+
+class MyLLQueue {
+private:
+    Node* front;
+    Node* rear;
+    int count;
+
+public:
+    MyLLQueue() {
+        front = nullptr;
+        rear = nullptr;
+        count = 0;
+    }
+
+    ~MyLLQueue() {
+        clear();
+    }
+
+    void clear() {
+        while (!isEmpty()) {
+            dequeue();
+        }
+    }
+
+    bool isEmpty() const {
+        return front == nullptr;
+    }
+
+    int size() const {
+        return count;
+    }
+
+    void enqueue(const int& value) {
+        Node* newNode = new Node(value);
+
+        if (isEmpty()) {
+            front = newNode;
+            rear = newNode;
+        }
+        else {
+            rear->next = newNode;
+            rear = newNode;
+        }
+
+        count++;
+    }
+
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Linked List Queue is empty" << endl;
+            return -1;
+        }
+
+        Node* temp = front;
+        int value = temp->data;
+
+        front = front->next;
+
+        delete temp;
+        count--;
+
+        if (front == nullptr) {
+            rear = nullptr;
+        }
+
+        return value;
+    }
+
+    int frontItem() const {
+        if (isEmpty()) {
+            cout << "Linked List Queue is empty" << endl;
+            return -1;
+        }
+
+        return front->data;
+    }
+
+    int rearItem() const {
+        if (isEmpty()) {
+            cout << "Linked List Queue is empty" << endl;
+            return -1;
+        }
+
+        return rear->data;
+    }
+
+    void printAll() const {
+        if (isEmpty()) {
+            cout << "Linked List Queue is empty" << endl;
+            return;
+        }
+
+        Node* current = front;
+
+        cout << "Linked List Queue: ";
+
+        while (current != nullptr) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+
+        cout << endl;
+    }
+};
+
+
+// =========================
+// main 함수
+// =========================
 int main() {
-    Queue q;
+    cout << "===== Circular Queue Test =====" << endl;
 
-    q.enqueue(10);
-    q.enqueue(20);
-    q.enqueue(30);
+    MyCircularQueue cq(5);
 
-    q.print();
+    cq.enqueue(10);
+    cq.enqueue(20);
+    cq.enqueue(30);
+    cq.enqueue(40);
 
-    cout << "dequeue: " << q.dequeue() << endl;
+    cq.print();
 
-    q.print();
+    cout << "Front: " << cq.frontItem() << endl;
+    cout << "Rear: " << cq.rearItem() << endl;
 
-    q.enqueue(40);
-    q.enqueue(50);
-    q.enqueue(60);
+    cout << "Dequeue: " << cq.dequeue() << endl;
+    cout << "Dequeue: " << cq.dequeue() << endl;
 
-    q.print();
+    cq.print();
 
-    cout << "Front: " << q.Front() << endl;
-    cout << "Rear: " << q.Rear() << endl;
-    cout << "Size: " << q.size() << endl;
+    cq.enqueue(50);
+    cq.enqueue(60);
+    cq.enqueue(70);
+
+    cq.print();
+
+    cout << "Size: " << cq.size() << endl;
+
+    cout << endl;
+
+    cout << "===== Linked List Queue Test =====" << endl;
+
+    MyLLQueue lq;
+
+    lq.enqueue(100);
+    lq.enqueue(200);
+    lq.enqueue(300);
+
+    lq.printAll();
+
+    cout << "Front: " << lq.frontItem() << endl;
+    cout << "Rear: " << lq.rearItem() << endl;
+
+    cout << "Dequeue: " << lq.dequeue() << endl;
+
+    lq.printAll();
+
+    lq.enqueue(400);
+    lq.enqueue(500);
+
+    lq.printAll();
+
+    cout << "Size: " << lq.size() << endl;
+
+    lq.clear();
+
+    lq.printAll();
 
     return 0;
 }
