@@ -2,58 +2,56 @@
 #include <vector>
 using namespace std;
 
-class MaxHeap {
+class Maxheap {
 private:
-    vector<int> heap;
+    vector<int> heap;   // root 노드는 항상 index 0에 저장
+    // 1번 index 기준이면:
+    // parent = i / 2
+    // left = i * 2
+    // right = i * 2 + 1
 
-    int parent(int i) const {
+
+public:
+    // 부모 노드 인덱스 반환
+    int parent(int i) {
         return (i - 1) / 2;
     }
 
-    int leftChild(int i) const {
+    // 왼쪽 자식 노드 인덱스 반환
+    int leftchild(int i) {
         return i * 2 + 1;
     }
 
-    int rightChild(int i) const {
+    // 오른쪽 자식 노드 인덱스 반환
+    int rightchild(int i) {
         return i * 2 + 2;
     }
 
-public:
-    bool isEmpty() const {
-        return heap.empty();
-    }
-
-    int size() const {
-        return heap.size();
-    }
-
-    void insert(int value) {
-        heap.push_back(value);
+    // 새로운 데이터를 heap에 삽입
+    // Heapify-Up 수행
+    void insert(int v) {
+        heap.push_back(v);
 
         int index = heap.size() - 1;
 
         while (index > 0 && heap[parent(index)] < heap[index]) {
-            swap(heap[parent(index)], heap[index]);
+            int temp = heap[parent(index)];
+            heap[parent(index)] = heap[index];
+            heap[index] = temp;
+
             index = parent(index);
         }
     }
 
-    int top() const {
-        if (isEmpty()) {
+    // Root 노드 삭제
+    // Heapify-Down 수행
+    void removeRoot() {
+        if (heap.empty()) {
             cout << "Heap is empty" << endl;
-            return -1;
+            return;
         }
 
-        return heap[0];
-    }
-
-    int removeRoot() {
-        if (isEmpty()) {
-            cout << "Heap is empty" << endl;
-            return -1;
-        }
-
-        int rootValue = heap[0];
+        cout << "Delete Root: " << heap[0] << endl;
 
         heap[0] = heap[heap.size() - 1];
         heap.pop_back();
@@ -61,8 +59,8 @@ public:
         int index = 0;
 
         while (true) {
-            int left = leftChild(index);
-            int right = rightChild(index);
+            int left = leftchild(index);
+            int right = rightchild(index);
             int largest = index;
 
             if (left < heap.size() && heap[left] > heap[largest]) {
@@ -76,24 +74,36 @@ public:
             if (largest == index) {
                 break;
             }
+            //swap
+            int temp = heap[index];
+            heap[index] = heap[largest];
+            heap[largest] = temp;
 
-            swap(heap[index], heap[largest]);
             index = largest;
         }
-
-        return rootValue;
     }
 
+    // root 값 반환
+    int top() const {
+        if (heap.empty()) {
+            cout << "Heap is empty" << endl;
+            return -1;
+        }
+
+        return heap[0];
+    }
+
+    // heap 출력
     void print() const {
-        if (isEmpty()) {
+        if (heap.empty()) {
             cout << "Heap is empty" << endl;
             return;
         }
 
         cout << "Heap: ";
 
-        for (int value : heap) {
-            cout << value << " ";
+        for (int i = 0; i < heap.size(); i++) {
+            cout << heap[i] << " ";
         }
 
         cout << endl;
@@ -101,30 +111,30 @@ public:
 };
 
 int main() {
-    MaxHeap heap;
+    Maxheap h;
 
-    heap.insert(50);
-    heap.insert(40);
-    heap.insert(30);
-    heap.insert(20);
-    heap.insert(10);
+    cout << "===== Max Heap Test =====" << endl;
 
-    heap.print();
+    h.insert(50);
+    h.insert(40);
+    h.insert(30);
+    h.insert(10);
+    h.insert(20);
 
-    cout << "Top: " << heap.top() << endl;
+    h.print();
 
-    cout << "Insert 35" << endl;
-    heap.insert(35);
-    heap.print();
+    cout << "Top: " << h.top() << endl;
 
-    cout << "Remove Root: " << heap.removeRoot() << endl;
-    heap.print();
+    cout << endl;
+    h.removeRoot();
+    h.print();
 
+    cout << endl;
     cout << "Insert 60" << endl;
-    heap.insert(60);
-    heap.print();
+    h.insert(60);
+    h.print();
 
-    cout << "Top: " << heap.top() << endl;
+    cout << "Top: " << h.top() << endl;
 
     return 0;
 }
