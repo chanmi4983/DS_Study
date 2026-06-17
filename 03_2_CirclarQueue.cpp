@@ -5,6 +5,7 @@ typedef int elem;
 
 //
 // 배열 기반 원형 큐
+//
 class MyCircularQueue {
 private:
     int front;
