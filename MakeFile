@@ -1,0 +1,15 @@
+CPP = g++
+CPPFLAGS = -Wall -std=c++17
+TARGET = app
+OBJECTS = main.o
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CPP) $(CPPFLAGS) -o $@ $(OBJECTS)
+
+main.o: main.cpp
+	$(CPP) $(CPPFLAGS) -c main.cpp
+
+clean:
+	rm -f $(OBJECTS) $(TARGET)
